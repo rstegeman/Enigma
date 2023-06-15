@@ -4,7 +4,14 @@
 #include <string>
 using namespace std;
 
-const char rotors[][26] = { //all possible rotor orientations
+const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
+const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', 'O', 'P', 'U'};
+
+const int fullAlphaSquared = 676; //length of the alphabet squared
+const int fullAlpha = 26; //length of the alphabet
+const int halfAlpha = 13; //length of half of the alphabet
+
+const char rotors[][fullAlpha] = { //all possible rotor orientations
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
     {'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A'},
     {'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B'},
@@ -33,31 +40,27 @@ const char rotors[][26] = { //all possible rotor orientations
     {'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'}
 };
 
-const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
-const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', 'O', 'P', 'U'};
-
 const int rSize = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of rotor
-
 
 char plugOne[10]; //arrays of characters that will be swapped by the plugboard
 char plugTwo[10];
 
-char rotorOne[26]; //Tracks orientation of rotorOne
+char rotorOne[fullAlpha]; //Tracks orientation of rotorOne
 int rotorOneID; //Tracks orientation ID of rotorOne
 
-char rotorTwo[26];
+char rotorTwo[fullAlpha];
 int rotorTwoID;
 
-char rotorThree[26];
+char rotorThree[fullAlpha];
 int rotorThreeID;
 
 int charProcessed = 0; //keeps track of characters processed for rotor shifting
 
-int OOBchecker(int index) { //keeps index values 0-25
+int OOBchecker(int index) {
   if (index < 0) {
-    return index + 26;
+    return index + fullAlpha;
   } else if (index > 25) {
-    return index - 26;
+    return index - fullAlpha;
   } else {
     return index;
   }
@@ -65,33 +68,6 @@ int OOBchecker(int index) { //keeps index values 0-25
 
 void shallowCopyArray(const char source[], char destination[], int size) {
     copy(source, source + size, destination);
-}
-
-void shiftRotorOne() { //should get called after each character is processed
-  if (rotorOneID == 25) {
-    rotorOneID = 0;
-  } else {
-    rotorOneID++;
-  }
-
-  shallowCopyArray(rotors[rotorOneID], rotorOne, rSize);
-
-  charProcessed++; //Increment charProcessed
-
-  if (charProcessed % 26 == 0)
-    shiftRotorTwo();
-  if (charProcessed % 676 == 0)
-    shiftRotorThree();
-}
-
-void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 characters)
-  if (rotorTwoID == 25) {
-    rotorTwoID = 0;
-  } else {
-    rotorTwoID++;
-  }
-
-  shallowCopyArray(rotors[rotorTwoID], rotorTwo, rSize);
 }
 
 void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676 characters)
@@ -104,16 +80,42 @@ void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676
   shallowCopyArray(rotors[rotorThreeID], rotorThree, rSize);
 }
 
+void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 characters)
+  if (rotorTwoID == 25) {
+    rotorTwoID = 0;
+  } else {
+    rotorTwoID++;
+  }
+
+  shallowCopyArray(rotors[rotorTwoID], rotorTwo, rSize);
+}
+
+void shiftRotorOne() { //should get called after each character is processed
+  if (rotorOneID == 25) {
+    rotorOneID = 0;
+  } else {
+    rotorOneID++;
+  }
+  shallowCopyArray(rotors[rotorOneID], rotorOne, rSize);
+
+  charProcessed++; //Increment charProcessed
+
+  if (charProcessed % fullAlpha == 0)
+    shiftRotorTwo();
+  if (charProcessed % fullAlphaSquared == 0)
+    shiftRotorThree();
+}
+
 void generateRandomRotors() { //Grab randomized rotors
-  int randomNumbers[26];
-    for (int i = 0; i < 26; ++i) {
+  int randomNumbers[fullAlpha];
+    for (int i = 0; i < fullAlpha; ++i) {
         randomNumbers[i] = i;  // Fill the array with numbers 0 to 25
     }
 
     random_device rd;
     mt19937 rng(rd());
 
-    shuffle(randomNumbers, randomNumbers + 26, rng);  // Shuffle the array
+    shuffle(randomNumbers, randomNumbers + fullAlpha, rng);  // Shuffle the array
 
     shallowCopyArray(rotors[randomNumbers[0]], rotorOne, rSize);
     rotorOneID = randomNumbers[0];
@@ -124,15 +126,15 @@ void generateRandomRotors() { //Grab randomized rotors
 }
 
 void generateRandomPlugboard() {
-  int randomNumbers[26];
-    for (int i = 0; i < 26; ++i) {
+  int randomNumbers[fullAlpha];
+    for (int i = 0; i < fullAlpha; ++i) {
         randomNumbers[i] = i;  // Fill the array with numbers 0 to 25
     }
 
     random_device rd;
     mt19937 rng(rd());
 
-    shuffle(randomNumbers, randomNumbers + 26, rng);  // Shuffle the array
+    shuffle(randomNumbers, randomNumbers + fullAlpha, rng);  // Shuffle the array
 
     // Use the first 20 numbers
     for (int i = 0; i < 20; ++i) {
@@ -161,13 +163,33 @@ string plugboardSwap(string message) { //make plugboard character swaps
 }
 
 string caesarCipher(string message) {
-  int alphr1 = OOBchecker(rotorOne[0] - rotors[0][0]); //diff between alphabet and rotorOne
-  int r1r2 = OOBchecker(rotorTwo[0] - rotorOne[0]); //diff between rotorOne and rotorTwo
-  int r2r3 = OOBchecker(rotorThree[0] - rotorTwo[0]); //diff between rotorThree and rotorTwo
-  
   for (int i = 0; i < message.size(); i++) {
+    int t0 = rotorOneID;
+    int t1 = (rotorTwoID - t0) % fullAlpha;
+    int t2 = (rotorThreeID - t1) % fullAlpha; //first pass
+    int t3 = fullAlpha - t2; //second pass
+
+    message[i] = (((message[i] - 'A') + t2) % fullAlpha) + 'A';
+
+    for (int j = 0; j < halfAlpha; j++) { //reflector
+      if (message[i] == reflectorOne[j]) {
+        message[i] = reflectorTwo[j];
+        continue;
+      }
+      if (message[i] == reflectorTwo[j]) {
+        message[i] = reflectorOne[j];
+        continue;
+      }
+    }
+
+    message[i] = (((message[i] - 'A') + t3) % fullAlpha) + 'A';
     
+    cout << message[i] << endl;
+
+    shiftRotorOne(); //shift the rotors
   }
+
+  return message;
 }
 
 void encrypt() {
@@ -212,7 +234,10 @@ void encrypt() {
 
   message = plugboardSwap(message);
 
-  //cout << message << endl;
+  cout << "Post plugboard: " << message << endl;
+  message = caesarCipher(message);
+
+  cout << "Post caesar: " << message << endl;
 
 }
 
