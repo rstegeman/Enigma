@@ -36,6 +36,8 @@ const char rotors[][26] = { //all possible rotor orientations
 const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
 const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', 'O', 'P', 'U'};
 
+const int rSize = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of rotor
+
 
 char plugOne[10]; //arrays of characters that will be swapped by the plugboard
 char plugTwo[10];
@@ -51,13 +53,25 @@ int rotorThreeID;
 
 int charProcessed = 0; //keeps track of characters processed for rotor shifting
 
+void shallowCopyArray(const char source[], char destination[], int size) {
+    copy(source, source + size, destination);
+}
+
 void shiftRotorOne() { //should get called after each character is processed
   if (rotorOneID == 25) {
     rotorOneID = 0;
   } else {
     rotorOneID++;
   }
+
+  shallowCopyArray(rotors[rotorOneID], rotorOne, rSize);
+
   charProcessed++; //Increment charProcessed
+
+  if (charProcessed % 26 == 0)
+    shiftRotorTwo();
+  if (charProcessed % 676 == 0)
+    shiftRotorThree();
 }
 
 void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 characters)
@@ -66,6 +80,8 @@ void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 ch
   } else {
     rotorTwoID++;
   }
+
+  shallowCopyArray(rotors[rotorTwoID], rotorTwo, rSize);
 }
 
 void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676 characters)
@@ -74,10 +90,8 @@ void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676
   } else {
     rotorThreeID++;
   }
-}
 
-void shallowCopyArray(const char source[], char destination[], int size) {
-    copy(source, source + size, destination);
+  shallowCopyArray(rotors[rotorThreeID], rotorThree, rSize);
 }
 
 void generateRandomRotors() { //Grab randomized rotors
@@ -91,12 +105,11 @@ void generateRandomRotors() { //Grab randomized rotors
 
     shuffle(randomNumbers, randomNumbers + 26, rng);  // Shuffle the array
 
-    int size = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of alphabet array
-    shallowCopyArray(rotors[randomNumbers[0]], rotorOne, size);
+    shallowCopyArray(rotors[randomNumbers[0]], rotorOne, rSize);
     rotorOneID = randomNumbers[0];
-    shallowCopyArray(rotors[randomNumbers[1]], rotorTwo, size);
+    shallowCopyArray(rotors[randomNumbers[1]], rotorTwo, rSize);
     rotorTwoID = randomNumbers[1];
-    shallowCopyArray(rotors[randomNumbers[2]], rotorThree, size);
+    shallowCopyArray(rotors[randomNumbers[2]], rotorThree, rSize);
     rotorThreeID = randomNumbers[2];
 }
 
@@ -135,6 +148,10 @@ string plugboardSwap(string message) { //make plugboard character swaps
     }
   }
   return message; //return swapped string
+}
+
+string caesarCipher(string message) {
+
 }
 
 void encrypt() {
