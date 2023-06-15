@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-const char rotors[][26] = {
+const char rotors[][26] = { //all possible rotor orientations
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
     {'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A'},
     {'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B'},
@@ -33,11 +33,15 @@ const char rotors[][26] = {
     {'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'}
 };
 
-char plugOne[10];
+const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
+const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', 'O', 'P', 'U'};
+
+
+char plugOne[10]; //arrays of characters that will be swapped by the plugboard
 char plugTwo[10];
 
-char rotorOne[26];
-int rotorOneID;
+char rotorOne[26]; //Tracks orientation of rotorOne
+int rotorOneID; //Tracks orientation ID of rotorOne
 
 char rotorTwo[26];
 int rotorTwoID;
@@ -117,6 +121,22 @@ void generateRandomPlugboard() {
     }
 }
 
+string plugboardSwap(string message) { //make plugboard character swaps
+  for (int i = 0; i < message.size(); i++) {
+    for (int j = 0; j < 10; j++) {
+      if (message[i] == plugOne[j]) { //if a letter matches in plugOne, swap it with plugTwo's letter
+        message[i] = plugTwo[j];
+        continue;
+      }
+      if (message[i] == plugTwo[j]) { //if a letter matches in plugTwo, swap it with plugOne's letter
+        message[i] = plugOne[j];
+        continue;
+      }
+    }
+  }
+  return message; //return swapped string
+}
+
 void encrypt() {
   cout << "-------------------Enigma Machine-------------------" << endl;
   cout << "-----------------Plugboard Settings-----------------" << endl;
@@ -138,6 +158,7 @@ void encrypt() {
   cout << "What is the message you would like to encrypt?" << endl;
   string message;
   cin >> message;
+  cout << endl;
 
   for (int i = 0; i < message.size(); i++) { //Catch any messages that contain non-letters
     if ( ((message[i] < 'a' || message[i] > 'z') && (message[i] < 'A' || message[i] > 'Z')) || cin.fail() ) {
@@ -150,26 +171,15 @@ void encrypt() {
     }
   }
 
-  for (int i = 0; i < message.size(); i++) {
+  for (int i = 0; i < message.size(); i++) { //capitalizes lowercase letters
     if (message[i] >= 'a' && message[i] <= 'z') {
-      message[i] += 'A' - 'a'; //capitalize letters
+      message[i] += 'A' - 'a'; 
     }
   }
 
-  /*
-  while(1) {
-    if ((response != 1 && response != 2) || cin.fail()) {
-      cin.clear();
-      cout << "Please enter either 1 or 2." << endl;
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      cin >> response;
-      cout << endl;
-    }
-    if (response == 1 || response == 2 || !cin.fail()) {
-      break;
-    }
-  }
-  */
+  message = plugboardSwap(message);
+
+  //cout << message << endl;
 
 }
 
