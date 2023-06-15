@@ -53,6 +53,16 @@ int rotorThreeID;
 
 int charProcessed = 0; //keeps track of characters processed for rotor shifting
 
+int OOBchecker(int index) { //keeps index values 0-25
+  if (index < 0) {
+    return index + 26;
+  } else if (index > 25) {
+    return index - 26;
+  } else {
+    return index;
+  }
+}
+
 void shallowCopyArray(const char source[], char destination[], int size) {
     copy(source, source + size, destination);
 }
@@ -151,7 +161,13 @@ string plugboardSwap(string message) { //make plugboard character swaps
 }
 
 string caesarCipher(string message) {
-
+  int alphr1 = OOBchecker(rotorOne[0] - rotors[0][0]); //diff between alphabet and rotorOne
+  int r1r2 = OOBchecker(rotorTwo[0] - rotorOne[0]); //diff between rotorOne and rotorTwo
+  int r2r3 = OOBchecker(rotorThree[0] - rotorTwo[0]); //diff between rotorThree and rotorTwo
+  
+  for (int i = 0; i < message.size(); i++) {
+    
+  }
 }
 
 void encrypt() {
