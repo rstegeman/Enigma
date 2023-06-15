@@ -138,6 +138,39 @@ void encrypt() {
   cout << "What is the message you would like to encrypt?" << endl;
   string message;
   cin >> message;
+
+  for (int i = 0; i < message.size(); i++) { //Catch any messages that contain non-letters
+    if ( ((message[i] < 'a' || message[i] > 'z') && (message[i] < 'A' || message[i] > 'Z')) || cin.fail() ) {
+      cin.clear();
+      cout << "Please use letters only." << endl;
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin >> message;
+      cout << endl;
+      i = -1;
+    }
+  }
+
+  for (int i = 0; i < message.size(); i++) {
+    if (message[i] >= 'a' && message[i] <= 'z') {
+      message[i] += 'A' - 'a'; //capitalize letters
+    }
+  }
+
+  /*
+  while(1) {
+    if ((response != 1 && response != 2) || cin.fail()) {
+      cin.clear();
+      cout << "Please enter either 1 or 2." << endl;
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin >> response;
+      cout << endl;
+    }
+    if (response == 1 || response == 2 || !cin.fail()) {
+      break;
+    }
+  }
+  */
+
 }
 
 void decrypt() {
