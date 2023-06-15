@@ -2,6 +2,7 @@
 #include <math.h>
 #include <random>
 #include <string>
+#include <sstream>
 using namespace std;
 
 const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
@@ -10,6 +11,8 @@ const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', '
 const int fullAlphaSquared = 676; //length of the alphabet squared
 const int fullAlpha = 26; //length of the alphabet
 const int halfAlpha = 13; //length of half of the alphabet
+
+const int num_pairs = 10; //the number of plugboard pairs
 
 const char rotors[][fullAlpha] = { //all possible rotor orientations
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
@@ -42,8 +45,8 @@ const char rotors[][fullAlpha] = { //all possible rotor orientations
 
 const int rSize = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of rotor
 
-char plugOne[10]; //arrays of characters that will be swapped by the plugboard
-char plugTwo[10];
+char plugOne[num_pairs + 1]; //arrays of characters that will be swapped by the plugboard
+char plugTwo[num_pairs + 1]; //plus one for the null character
 
 char rotorOne[fullAlpha]; //Tracks orientation of rotorOne
 int rotorOneID; //Tracks orientation ID of rotorOne
@@ -141,14 +144,14 @@ void generateRandomPlugboard() {
         if (i <= 9) {
           plugOne[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
         } else {
-          plugTwo[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
+          plugTwo[i % num_pairs] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
         }
     }
 }
 
 string plugboardSwap(string message) { //make plugboard character swaps
   for (int i = 0; i < message.size(); i++) {
-    for (int j = 0; j < 10; j++) {
+    for (int j = 0; j < num_pairs; j++) {
       if (message[i] == plugOne[j]) { //if a letter matches in plugOne, swap it with plugTwo's letter
         message[i] = plugTwo[j];
         continue;
@@ -183,13 +186,36 @@ string caesarCipher(string message) {
     }
 
     message[i] = (((message[i] - 'A') + t3) % fullAlpha) + 'A';
-    
-    cout << message[i] << endl;
 
     shiftRotorOne(); //shift the rotors
   }
 
   return message;
+}
+
+void setPlugboard() {
+  cout << "-----------------Plugboard Settings-----------------" << endl;
+  cout << "Enter provide the upper reflection: " << endl;
+  string upper;
+  cin >> upper;
+
+  for (int i = 0; i < num_pairs; i++) {
+    plugOne[i] = upper[i];
+  }
+
+  cin.clear();
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+  cout << "Enter provide the lower reflection: " << endl;
+  string lower;
+  cin >> lower;
+
+  for (int i = 0; i < num_pairs; i++) {
+    plugTwo[i] = lower[i];
+  }
+  
+  cout << "plugOne: " << plugOne << endl;
+  cout << "plugTwo: " << plugTwo << endl;
 }
 
 void encrypt() {
@@ -198,9 +224,15 @@ void encrypt() {
   generateRandomPlugboard(); //create randomized plugboard settings
   cout << "A randomized plugboard pairings have been created for you." << endl; //default plugboard settings
   cout << "The following letters have been swapped:" << endl; //custom plugboard settings
-  for (int i = 0; i < 10; i++) {
-    cout << plugOne[i] << "/" << plugTwo[i] << endl; //Print swapped letters
+  for (int i = 0; i < num_pairs; i++) {
+    cout << plugOne[i]; 
   }
+  cout << " <- Upper Reflection"<< endl;
+
+  for (int i = 0; i < num_pairs; i++) {
+    cout << plugTwo[i]; 
+  }
+  cout << " <- Lower Reflection"<< endl;
 
   cout << endl;
   generateRandomRotors();
@@ -233,17 +265,16 @@ void encrypt() {
   }
 
   message = plugboardSwap(message);
-
-  cout << "Post plugboard: " << message << endl;
   message = caesarCipher(message);
 
-  cout << "Post caesar: " << message << endl;
+  cout << "-------------------Enigma Machine-------------------" << endl;
+  cout << "Your encrypted message: " << message << endl;
 
 }
 
 void decrypt() {
     cout << "-------------------Enigma Machine-------------------" << endl;
-    cout << "-----------------Plugboard Settings-----------------" << endl;
+    setPlugboard();
 }
 
 int main() {
