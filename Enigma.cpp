@@ -1,8 +1,9 @@
 #include <iostream>
 #include <math.h>
+#include <random>
 using namespace std;
-char plugIn[6];
-char plugOut[6];
+char plugIn[10];
+char plugOut[10];
 
 const char rotors[][26] = {
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
@@ -34,6 +35,27 @@ const char rotors[][26] = {
 };
 
 
+
+void generateRandomPlugboard() {
+  int randomNumbers[26];
+    for (int i = 0; i < 26; ++i) {
+        randomNumbers[i] = i;  // Fill the array with numbers 0 to 25
+    }
+
+    random_device rd;
+    mt19937 rng(rd());
+
+    shuffle(randomNumbers, randomNumbers + 26, rng);  // Shuffle the array
+
+    // Use the first 20 numbers
+    for (int i = 0; i < 20; ++i) {
+        if (i <= 9) {
+          plugIn[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
+        } else {
+          plugOut[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
+        }
+    }
+}
 
 void encrypt() {
   cout << "-------------------Enigma Machine-------------------" << endl;
