@@ -1,9 +1,8 @@
 #include <iostream>
 #include <math.h>
 #include <random>
+#include <string>
 using namespace std;
-char plugOne[10];
-char plugTwo[10];
 
 const char rotors[][26] = {
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
@@ -34,22 +33,30 @@ const char rotors[][26] = {
     {'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'}
 };
 
-char rotorOne[];
+char plugOne[10];
+char plugTwo[10];
+
+char rotorOne[26];
 int rotorOneID;
-char rotorTwo[];
+
+char rotorTwo[26];
 int rotorTwoID;
-char rotorThree[];
+
+char rotorThree[26];
 int rotorThreeID;
 
-void shiftRotorOne() {
+int charProcessed = 0; //keeps track of characters processed for rotor shifting
+
+void shiftRotorOne() { //should get called after each character is processed
   if (rotorOneID == 25) {
     rotorOneID = 0;
   } else {
     rotorOneID++;
   }
+  charProcessed++; //Increment charProcessed
 }
 
-void shiftRotorTwo() {
+void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 characters)
   if (rotorTwoID == 25) {
     rotorTwoID = 0;
   } else {
@@ -57,7 +64,7 @@ void shiftRotorTwo() {
   }
 }
 
-void shiftRotorThre() {
+void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676 characters)
   if (rotorThreeID == 25) {
     rotorThreeID = 0;
   } else {
@@ -70,24 +77,15 @@ void shallowCopyArray(const char source[], char destination[], int size) {
 }
 
 void generateRandomRotors() { //Grab randomized rotors
-  int randomNumbers[3];
-    for (int i = 0; i < 3; ++i) {
+  int randomNumbers[26];
+    for (int i = 0; i < 26; ++i) {
         randomNumbers[i] = i;  // Fill the array with numbers 0 to 25
     }
 
     random_device rd;
     mt19937 rng(rd());
 
-    shuffle(randomNumbers, randomNumbers + 3, rng);  // Shuffle the array
-
-    // Use the first 20 numbers
-    for (int i = 0; i < 3; ++i) {
-        if (i <= 9) {
-          plugOne[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
-        } else {
-          plugTwo[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
-        }
-    }
+    shuffle(randomNumbers, randomNumbers + 26, rng);  // Shuffle the array
 
     int size = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of alphabet array
     shallowCopyArray(rotors[randomNumbers[0]], rotorOne, size);
@@ -130,11 +128,16 @@ void encrypt() {
   }
 
   cout << endl;
+  generateRandomRotors();
   cout << "Randomized rotor settings have been created for you." << endl;
   cout << "The first rotor is set to: " << rotorOne[0] << endl;
   cout << "The second rotor is set to: " << rotorTwo[0] << endl;
   cout << "The third rotor is set to: " << rotorThree[0] << endl;
   cout << endl;
+
+  cout << "What is the message you would like to encrypt?" << endl;
+  string message;
+  cin >> message;
 }
 
 void decrypt() {
@@ -147,7 +150,6 @@ int main() {
   cout << "Which would you like to do?:" << endl;
   cout << "1. Encrypt" << endl;
   cout << "2. Decrypt" << endl;
-  cout << endl;
 
   int response;
   cin >> response;
@@ -164,6 +166,7 @@ int main() {
     if (response == 1 || response == 2 || !cin.fail()) {
       break;
     }
+  }
 
     if (response == 1) {
         encrypt();
@@ -171,5 +174,5 @@ int main() {
         decrypt();
     }
     return 0;
-  }
 }
+//cout << "Checkpoint" << endl;
