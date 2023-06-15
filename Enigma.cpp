@@ -2,8 +2,8 @@
 #include <math.h>
 #include <random>
 using namespace std;
-char plugIn[10];
-char plugOut[10];
+char plugOne[10];
+char plugTwo[10];
 
 const char rotors[][26] = {
     {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
@@ -34,7 +34,39 @@ const char rotors[][26] = {
     {'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'}
 };
 
+char rotorOne[];
+char rotorTwo[];
+char rotorThree[];
 
+void shallowCopyArray(const char source[], char destination[], int size) {
+    copy(source, source + size, destination);
+}
+
+void generateRandomRotors() { //Grab randomized rotors
+  int randomNumbers[3];
+    for (int i = 0; i < 3; ++i) {
+        randomNumbers[i] = i;  // Fill the array with numbers 0 to 25
+    }
+
+    random_device rd;
+    mt19937 rng(rd());
+
+    shuffle(randomNumbers, randomNumbers + 3, rng);  // Shuffle the array
+
+    // Use the first 20 numbers
+    for (int i = 0; i < 3; ++i) {
+        if (i <= 9) {
+          plugOne[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
+        } else {
+          plugTwo[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
+        }
+    }
+
+    int size = sizeof(rotors[0])/sizeof(rotors[0][0]);
+    shallowCopyArray(rotors[randomNumbers[0]], rotorOne, size);
+    shallowCopyArray(rotors[randomNumbers[1]], rotorTwo, size);
+    shallowCopyArray(rotors[randomNumbers[2]], rotorThree, size);
+}
 
 void generateRandomPlugboard() {
   int randomNumbers[26];
@@ -50,9 +82,9 @@ void generateRandomPlugboard() {
     // Use the first 20 numbers
     for (int i = 0; i < 20; ++i) {
         if (i <= 9) {
-          plugIn[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
+          plugOne[i] = randomNumbers[i] + 'A'; //fills plugIn with random chars
         } else {
-          plugOut[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
+          plugTwo[i % 10] = randomNumbers[i] + 'A'; //fills plugOut with random chars; modulo to account for index over 10
         }
     }
 }
@@ -60,60 +92,19 @@ void generateRandomPlugboard() {
 void encrypt() {
   cout << "-------------------Enigma Machine-------------------" << endl;
   cout << "-----------------Plugboard Settings-----------------" << endl;
-  cout << "1. Use default" << endl; //default plugboard settings
-  cout << "2. Use custom" << endl; //custom plugboard settings
-  int response;
-  cin >> response;
+  generateRandomPlugboard(); //create randomized plugboard settings
+  cout << "A randomized plugboard pairings have been created for you." << endl; //default plugboard settings
+  cout << "The following letters have been swapped:" << endl; //custom plugboard settings
+  for (int i = 0; i < 10; i++) {
+    cout << plugOne[i] << "/" << plugTwo[i] << endl; //Print swapped letters
+  }
+  
   cout << endl;
-
-  while(1) {
-    if ((response != 1 && response != 2) || cin.fail()) { //Catch erroneous responses
-      cin.clear();
-      cout << "Please enter either 1 or 2." << endl;
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      cin >> response;
-      cout << endl;
-    }
-    if (response == 1 || response == 2 || !cin.fail()) { //corrected input
-      break;
-    }
-  }
-
-  if (response == 1) { //default plugboard settings
-    *(plugIn) = 'A';
-    *(plugIn + 1) = 'P';
-    *(plugIn + 2) = 'T';
-    *(plugIn + 3) = 'B';
-    *(plugIn + 4) = 'K';
-    *(plugIn + 5) = 'O';
-
-    *(plugOut) = 'L';
-    *(plugOut + 1) = 'R';
-    *(plugOut + 2) = 'D';
-    *(plugOut + 3) = 'W';
-    *(plugOut + 4) = 'F';
-    *(plugOut + 5) = 'Y';
-  } else {
-    for (int i = 0; i < 6; i++) {
-      cout << "Please enter a unique capital letter. (" << i + 1 << " of 6)" << endl; //custom plugboard input
-      char letterIn;
-      cin >> letterIn;
-      cout << endl;
-
-      while(1) {
-        if ((letterIn < 'A' && letterIn > 'Z') || cin.fail()) { //erroneous plugboard input
-          cin.clear();
-          cout << "Please enter a unique capital letter." << endl;
-          cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          cin >> letterIn;
-          cout << endl;
-        }
-        if (letterIn >= 'A' || letterIn <= 'Z' || !cin.fail()) { //corrected input
-          break;
-        }
-      }
-    }
-  }
+  cout << "Randomized rotor settings have been created for you." << endl;
+  cout << "The first rotor is set to: " << rotorOne[0] << endl;
+  cout << "The second rotor is set to: " << rotorTwo[0] << endl;
+  cout << "The third rotor is set to: " << rotorThree[0] << endl;
+  cout << endl;
 }
 
 void decrypt() {
