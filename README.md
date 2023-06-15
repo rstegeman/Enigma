@@ -1,1 +1,2 @@
-# Password_Manager
+# Enigma
+A functional implementation of the Enigma Machine.
