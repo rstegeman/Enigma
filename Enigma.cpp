@@ -5,9 +5,10 @@ char plugIn[6];
 char plugOut[6];
 
 void encrypt() {
-    cout << "-----------------------Plugboard-----------------------" << endl;
-    cout << "1. Use default" << endl;
-    cout << "2. Use custom" << endl;
+    cout << "-------------------Enigma Machine-------------------" << endl;
+    cout << "-----------------Plugboard Settings-----------------" << endl;
+    cout << "1. Use default" << endl; //default plugboard settings
+    cout << "2. Use custom" << endl; //custom plugboard settings
     int response;
     cin >> response;
     cout << endl;
@@ -40,9 +41,22 @@ void encrypt() {
       *(plugOut + 5) = 'Y';
     } else {
       for (int i = 0; i < 6; i++) {
-        cout << "Please enter a unique capital letter." << endl;
+        cout << "Please enter a unique capital letter. (" << i + 1 << " of 6)" << endl;
         char letterIn;
         cin >> letterIn;
+        cout << endl;
+
+        while(1) {
+        if ((letterIn < 'A' && letterIn > 'Z') || cin.fail()) {
+          cin.clear();
+          cout << "Please enter a unique capital letter." << endl;
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          cin >> letterIn;
+          cout << endl;
+        }
+        if (letterIn >= 'A' || letterIn <= 'Z' || !cin.fail()) {
+          break;
+        }
       }
     }
 }
@@ -52,7 +66,7 @@ void decrypt() {
 }
 
 int main() {
-    cout << "-------------------Password Manager-------------------" << endl;
+    cout << "-------------------Enigma Machine-------------------" << endl;
     cout << "Which would you like to do?:" << endl;
     cout << "1. Encrypt" << endl;
     cout << "2. Decrypt" << endl;
