@@ -35,8 +35,35 @@ const char rotors[][26] = {
 };
 
 char rotorOne[];
+int rotorOneID;
 char rotorTwo[];
+int rotorTwoID;
 char rotorThree[];
+int rotorThreeID;
+
+void shiftRotorOne() {
+  if (rotorOneID == 25) {
+    rotorOneID = 0;
+  } else {
+    rotorOneID++;
+  }
+}
+
+void shiftRotorTwo() {
+  if (rotorTwoID == 25) {
+    rotorTwoID = 0;
+  } else {
+    rotorTwoID++;
+  }
+}
+
+void shiftRotorThre() {
+  if (rotorThreeID == 25) {
+    rotorThreeID = 0;
+  } else {
+    rotorThreeID++;
+  }
+}
 
 void shallowCopyArray(const char source[], char destination[], int size) {
     copy(source, source + size, destination);
@@ -62,10 +89,13 @@ void generateRandomRotors() { //Grab randomized rotors
         }
     }
 
-    int size = sizeof(rotors[0])/sizeof(rotors[0][0]);
+    int size = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of alphabet array
     shallowCopyArray(rotors[randomNumbers[0]], rotorOne, size);
+    rotorOneID = randomNumbers[0];
     shallowCopyArray(rotors[randomNumbers[1]], rotorTwo, size);
+    rotorTwoID = randomNumbers[1];
     shallowCopyArray(rotors[randomNumbers[2]], rotorThree, size);
+    rotorThreeID = randomNumbers[2];
 }
 
 void generateRandomPlugboard() {
@@ -98,7 +128,7 @@ void encrypt() {
   for (int i = 0; i < 10; i++) {
     cout << plugOne[i] << "/" << plugTwo[i] << endl; //Print swapped letters
   }
-  
+
   cout << endl;
   cout << "Randomized rotor settings have been created for you." << endl;
   cout << "The first rotor is set to: " << rotorOne[0] << endl;
