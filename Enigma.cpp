@@ -106,6 +106,33 @@ string plugboardSwap(string message) { //make plugboard character swaps
   return message; //return swapped string
 }
 
+string caesarDecipher(string message) {
+  for (int i = 0; i < message.size(); i++) {
+    int t0 = rotorOneID;
+    int t1 = (rotorTwoID - t0 + 26) % 26;
+    int t2 = (rotorThreeID - t1 + 26) % 26;
+    int t3 = 26 - t2;
+
+    message[i] = (((message[i] - 'A') + t2) % 26) + 'A';
+
+    for (int j = 0; j < 13; j++) {
+      if (message[i] == reflectorOne[j]) {
+        message[i] = reflectorTwo[j];
+        continue;
+      }
+      if (message[i] == reflectorTwo[j]) {
+        message[i] = reflectorOne[j];
+        continue;
+      }
+    }
+
+    message[i] = (((message[i] - 'A') + t3) % 26) + 'A';
+    shiftRotors();
+  }
+
+  return message;
+}
+
 string caesarCipher(string message) {
   for (int i = 0; i < message.size(); i++) {
     int t0 = rotorOneID;
@@ -270,12 +297,20 @@ void decrypt() {
     if (rotor >= 'a' && rotor <= 'z') {
       rotor = rotor + 'A' - 'a';
     }
-    
-    rotorThreeID = rotor - 'A';
 
-    cout << "ID 1: " << rotorOneID << endl;
-    cout << "ID 2: " << rotorTwoID << endl;
-    cout << "ID 3: " << rotorThreeID << endl;
+    rotorThreeID = rotor - 'A';
+    cout << "----------------------Message-----------------------" << endl;
+    cout << "What is your encrypted message?" << endl;
+    string message;
+    cin >> message;
+
+
+    message = caesarDecipher(message);
+    message = plugboardSwap(message);
+
+    cout << "-------------------Enigma Machine-------------------" << endl;
+    cout << "Your decrypted message: " << message << endl;
+
 
 }
 
