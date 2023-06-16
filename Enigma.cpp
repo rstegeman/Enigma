@@ -5,7 +5,8 @@
 #include <sstream>
 using namespace std;
 
-const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'}; //a reflector divided in two
+//These two arrays will serve as a reflector and operate similarly to the plugboard
+const char reflectorOne[] = {'B', 'D', 'C', 'L', 'E', 'I', 'M', 'J', 'H', 'F', 'A', 'G', 'K'};
 const char reflectorTwo[] = {'S', 'T', 'V', 'Y', 'X', 'W', 'Z', 'Q', 'R', 'N', 'O', 'P', 'U'};
 
 const int fullAlphaSquared = 676; //length of the alphabet squared
@@ -14,99 +15,42 @@ const int halfAlpha = 13; //length of half of the alphabet
 
 const int num_pairs = 10; //the number of plugboard pairs
 
-const char rotors[][fullAlpha] = { //all possible rotor orientations
-    {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'},
-    {'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A'},
-    {'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B'},
-    {'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C'},
-    {'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D'},
-    {'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E'},
-    {'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F'},
-    {'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G'},
-    {'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'},
-    {'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'},
-    {'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'},
-    {'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'},
-    {'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'},
-    {'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'},
-    {'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'},
-    {'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'},
-    {'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'},
-    {'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'},
-    {'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'},
-    {'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'},
-    {'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'},
-    {'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'},
-    {'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'},
-    {'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'},
-    {'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'},
-    {'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'}
-};
-
-const int rSize = sizeof(rotors[0])/sizeof(rotors[0][0]); //size of rotor
-
+//these two arrays make up the plugboard that would swap letters when typed in the keyboard
 char plugOne[num_pairs + 1]; //arrays of characters that will be swapped by the plugboard
 char plugTwo[num_pairs + 1]; //plus one for the null character
 
-char rotorOne[fullAlpha]; //Tracks orientation of rotorOne
-int rotorOneID; //Tracks orientation ID of rotorOne
-
-char rotorTwo[fullAlpha];
+//Tracks orientation ID of rotorOne
+//Each rotor is in alphabetical order, but the ID determines where the rotor starts
+int rotorOneID;
 int rotorTwoID;
-
-char rotorThree[fullAlpha];
 int rotorThreeID;
 
 int charProcessed = 0; //keeps track of characters processed for rotor shifting
 
-int OOBchecker(int index) {
-  if (index < 0) {
-    return index + fullAlpha;
-  } else if (index > 25) {
-    return index - fullAlpha;
-  } else {
-    return index;
-  }
-}
-
-void shallowCopyArray(const char source[], char destination[], int size) {
-    copy(source, source + size, destination);
-}
-
-void shiftRotorThree() { //should get called after a full cycle of rotorTwo (676 characters)
-  if (rotorThreeID == 25) {
-    rotorThreeID = 0;
-  } else {
-    rotorThreeID++;
-  }
-
-  shallowCopyArray(rotors[rotorThreeID], rotorThree, rSize);
-}
-
-void shiftRotorTwo() { //should get called after a full cycle of rotorOne (26 characters)
-  if (rotorTwoID == 25) {
-    rotorTwoID = 0;
-  } else {
-    rotorTwoID++;
-  }
-
-  shallowCopyArray(rotors[rotorTwoID], rotorTwo, rSize);
-}
-
-void shiftRotorOne() { //should get called after each character is processed
+//should get called after each character is processed
+void shiftRotors() { 
   if (rotorOneID == 25) {
     rotorOneID = 0;
   } else {
     rotorOneID++;
   }
-  shallowCopyArray(rotors[rotorOneID], rotorOne, rSize);
 
   charProcessed++; //Increment charProcessed
 
-  if (charProcessed % fullAlpha == 0)
-    shiftRotorTwo();
-  if (charProcessed % fullAlphaSquared == 0)
-    shiftRotorThree();
+  if (charProcessed % fullAlpha == 0) {
+    if (rotorTwoID == 25) {
+      rotorTwoID = 0;
+    } else {
+      rotorTwoID++;
+    }
+  }
+  if (charProcessed % fullAlphaSquared == 0) {
+    if (rotorThreeID == 25) {
+      rotorThreeID = 0;
+    } else {
+      rotorThreeID++;
+    }
+  }
 }
 
 void generateRandomRotors() { //Grab randomized rotors
@@ -120,11 +64,8 @@ void generateRandomRotors() { //Grab randomized rotors
 
     shuffle(randomNumbers, randomNumbers + fullAlpha, rng);  // Shuffle the array
 
-    shallowCopyArray(rotors[randomNumbers[0]], rotorOne, rSize);
     rotorOneID = randomNumbers[0];
-    shallowCopyArray(rotors[randomNumbers[1]], rotorTwo, rSize);
     rotorTwoID = randomNumbers[1];
-    shallowCopyArray(rotors[randomNumbers[2]], rotorThree, rSize);
     rotorThreeID = randomNumbers[2];
 }
 
@@ -187,7 +128,7 @@ string caesarCipher(string message) {
 
     message[i] = (((message[i] - 'A') + t3) % fullAlpha) + 'A';
 
-    shiftRotorOne(); //shift the rotors
+    shiftRotors();
   }
 
   return message;
@@ -199,23 +140,16 @@ void setPlugboard() {
   string upper;
   cin >> upper;
 
-  for (int i = 0; i < num_pairs; i++) {
-    plugOne[i] = upper[i];
-  }
-
-  cin.clear();
-  cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
   cout << "Enter provide the lower reflection: " << endl;
   string lower;
   cin >> lower;
 
   for (int i = 0; i < num_pairs; i++) {
+    plugOne[i] = upper[i];
     plugTwo[i] = lower[i];
   }
   
-  cout << "plugOne: " << plugOne << endl;
-  cout << "plugTwo: " << plugTwo << endl;
+  
 }
 
 void encrypt() {
@@ -236,10 +170,11 @@ void encrypt() {
 
   cout << endl;
   generateRandomRotors();
+  cout << "-------------------Rotor Settings-------------------" << endl;
   cout << "Randomized rotor settings have been created for you." << endl;
-  cout << "The first rotor is set to: " << rotorOne[0] << endl;
-  cout << "The second rotor is set to: " << rotorTwo[0] << endl;
-  cout << "The third rotor is set to: " << rotorThree[0] << endl;
+  cout << "The first rotor is set to: " << (char)(rotorOneID + 'A') << endl;
+  cout << "The second rotor is set to: " << (char)(rotorTwoID + 'A') << endl;
+  cout << "The third rotor is set to: " << (char)(rotorThreeID + 'A') << endl;
   cout << endl;
 
   cout << "What is the message you would like to encrypt?" << endl;
@@ -275,6 +210,73 @@ void encrypt() {
 void decrypt() {
     cout << "-------------------Enigma Machine-------------------" << endl;
     setPlugboard();
+    cout << "-------------------Rotor Settings-------------------" << endl;
+    cout << "What letter should the first rotor be set to?"  << endl;
+    char rotor;
+    cin >> rotor;
+
+    while(1) {
+      if ( ((rotor < 'a' || rotor > 'z') && (rotor < 'A' || rotor > 'Z')) || cin.fail() ) {
+        cin.clear();
+        cout << "Please use letters only." << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> rotor;
+        cout << endl;
+      }
+      if ( ((rotor >= 'a' && rotor <= 'z') || (rotor >= 'A' && rotor <= 'Z')) && !cin.fail()) {
+        break;
+      }
+    }
+    if (rotor >= 'a' && rotor <= 'z') {
+      rotor = rotor + 'A' - 'a';
+    }
+
+    rotorOneID = rotor - 'A';
+    cout << "What letter should the second rotor be set to?"  << endl;
+    cin >> rotor;
+
+    while(1) {
+      if ( ((rotor < 'a' || rotor > 'z') && (rotor < 'A' || rotor > 'Z')) || cin.fail() ) {
+        cin.clear();
+        cout << "Please use letters only." << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> rotor;
+        cout << endl;
+      }
+      if ( ((rotor >= 'a' && rotor <= 'z') || (rotor >= 'A' && rotor <= 'Z')) && !cin.fail()) {
+        break;
+      }
+    }
+    if (rotor >= 'a' && rotor <= 'z') {
+      rotor = rotor + 'A' - 'a';
+    }
+
+    rotorTwoID = rotor - 'A';
+    cout << "What letter should the third rotor be set to?"  << endl;
+    cin >> rotor;
+
+    while(1) {
+      if ( ((rotor < 'a' || rotor > 'z') && (rotor < 'A' || rotor > 'Z')) || cin.fail() ) {
+        cin.clear();
+        cout << "Please use letters only." << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> rotor;
+        cout << endl;
+      }
+      if ( ((rotor >= 'a' && rotor <= 'z') || (rotor >= 'A' && rotor <= 'Z')) && !cin.fail()) {
+        break;
+      }
+    }
+    if (rotor >= 'a' && rotor <= 'z') {
+      rotor = rotor + 'A' - 'a';
+    }
+    
+    rotorThreeID = rotor - 'A';
+
+    cout << "ID 1: " << rotorOneID << endl;
+    cout << "ID 2: " << rotorTwoID << endl;
+    cout << "ID 3: " << rotorThreeID << endl;
+
 }
 
 int main() {
@@ -295,7 +297,7 @@ int main() {
       cin >> response;
       cout << endl;
     }
-    if (response == 1 || response == 2 || !cin.fail()) {
+    if ((response == 1 || response == 2) && !cin.fail()) {
       break;
     }
   }
