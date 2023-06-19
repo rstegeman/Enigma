@@ -27,31 +27,15 @@ int rotorThreeID;
 
 int charProcessed = 0; //keeps track of characters processed for rotor shifting
 
-//should get called after each character is processed
-void shiftRotors() { 
-  if (rotorOneID == 25) {
-    rotorOneID = 0;
-  } else {
-    rotorOneID++;
-  }
+void shiftRotors() {
+  rotorOneID = (rotorOneID + 1) % fullAlpha;
 
-  charProcessed++; //Increment charProcessed
+  if (rotorOneID == rotorTwoID)
+    rotorTwoID = (rotorTwoID + 1) % fullAlpha;
 
-  if (charProcessed % fullAlpha == 0) {
-    if (rotorTwoID == 25) {
-      rotorTwoID = 0;
-    } else {
-      rotorTwoID++;
-    }
-  }
-  if (charProcessed % fullAlphaSquared == 0) {
-    if (rotorThreeID == 25) {
-      rotorThreeID = 0;
-    } else {
-      rotorThreeID++;
-    }
-  }
+  rotorThreeID = (rotorThreeID + 1) % fullAlpha;
 }
+
 
 void generateRandomRotors() { //Grab randomized rotors
   int randomNumbers[fullAlpha];
@@ -106,39 +90,12 @@ string plugboardSwap(string message) { //make plugboard character swaps
   return message; //return swapped string
 }
 
-string caesarDecipher(string message) {
-  for (int i = 0; i < message.size(); i++) {
-    int t0 = rotorOneID;
-    int t1 = (rotorTwoID - t0 + 26) % 26;
-    int t2 = (rotorThreeID - t1 + 26) % 26;
-    int t3 = 26 - t2;
-
-    message[i] = (((message[i] - 'A') + t2) % 26) + 'A';
-
-    for (int j = 0; j < 13; j++) {
-      if (message[i] == reflectorOne[j]) {
-        message[i] = reflectorTwo[j];
-        continue;
-      }
-      if (message[i] == reflectorTwo[j]) {
-        message[i] = reflectorOne[j];
-        continue;
-      }
-    }
-
-    message[i] = (((message[i] - 'A') + t3) % 26) + 'A';
-    shiftRotors();
-  }
-
-  return message;
-}
-
 string caesarCipher(string message) {
   for (int i = 0; i < message.size(); i++) {
     int t0 = rotorOneID;
     int t1 = (rotorTwoID - t0) % fullAlpha;
-    int t2 = (rotorThreeID - t1) % fullAlpha; //first pass
-    int t3 = fullAlpha - t2; //second pass
+    int t2 = (rotorThreeID - t1) % fullAlpha;
+    int t3 = (fullAlpha - t2) % fullAlpha;
 
     message[i] = (((message[i] - 'A') + t2) % fullAlpha) + 'A';
 
@@ -160,6 +117,34 @@ string caesarCipher(string message) {
 
   return message;
 }
+
+string caesarDecipher(string message) {
+  for (int i = 0; i < message.size(); i++) {
+    int t0 = rotorOneID;
+    int t1 = (rotorTwoID - t0 + fullAlpha) % fullAlpha;
+    int t2 = (rotorThreeID - t1 + fullAlpha) % fullAlpha;
+    int t3 = (fullAlpha - t2) % fullAlpha;
+
+    message[i] = (((message[i] - 'A') + t2) % fullAlpha) + 'A';
+
+    for (int j = 0; j < 13; j++) {
+      if (message[i] == reflectorOne[j]) {
+        message[i] = reflectorTwo[j];
+        continue;
+      }
+      if (message[i] == reflectorTwo[j]) {
+        message[i] = reflectorOne[j];
+        continue;
+      }
+    }
+
+    message[i] = (((message[i] - 'A') + t3) % fullAlpha) + 'A';
+    shiftRotors();
+  }
+
+  return message;
+}
+
 
 void setPlugboard() {
   cout << "-------------------Plugboard Settings-------------------" << endl << endl;
