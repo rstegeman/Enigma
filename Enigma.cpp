@@ -3,6 +3,7 @@
 #include <math.h>
 #include <random>
 #include <string>
+#include <algorithm>
 #include <sstream>
 using namespace std;
 
